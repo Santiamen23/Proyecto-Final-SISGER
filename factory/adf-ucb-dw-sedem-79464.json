@@ -1,0 +1,10 @@
+{
+	"name": "adf-ucb-dw-sedem-79464",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "brazilsouth"
+}
