@@ -1,0 +1,125 @@
+{
+	"name": "df_hechos_entregas",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_entregas_sup",
+						"type": "DatasetReference"
+					},
+					"name": "entregas"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_catalogo_sup",
+						"type": "DatasetReference"
+					},
+					"name": "catalogo"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_facts_entregas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          entrega_id as integer,",
+				"          boleta_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          paquete_id as integer,",
+				"          paquete_nombre as string,",
+				"          fecha_entrega as date,",
+				"          lote_produccion as string,",
+				"          peso_paquete_kg as double,",
+				"          fecha_proxima_entrega as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> entregas",
+				"source(output(",
+				"          paquete_id as integer,",
+				"          nombre as string,",
+				"          contenido as string,",
+				"          peso_estandar_kg as double,",
+				"          costo_estimado_bs as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> catalogo",
+				"entregas derive(fecha_id = toInteger(toString(fecha_entrega, 'yyyyMMdd'))) ~> derivedColumn1",
+				"derivedColumn1, catalogo join(entregas@paquete_id == catalogo@paquete_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          entrega_id,",
+				"          ci_numero,",
+				"          ci_expedicion,",
+				"          establecimiento_id,",
+				"          paquete_id = entregas@paquete_id,",
+				"          fecha_id,",
+				"          peso_estandar_kg,",
+				"          costo_estimado_bs",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          entrega_id as integer,",
+				"          fecha_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          paquete_id as integer,",
+				"          peso_entregado_kg as double,",
+				"          costo_bs as double",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          entrega_id,",
+				"          fecha_id,",
+				"          ci_numero,",
+				"          ci_expedicion,",
+				"          establecimiento_id,",
+				"          paquete_id,",
+				"          peso_entregado_kg = peso_estandar_kg,",
+				"          costo_bs = costo_estimado_bs",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

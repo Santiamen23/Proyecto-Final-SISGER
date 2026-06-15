@@ -1,0 +1,26 @@
+{
+	"name": "gold_dim_beneficiaria",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ci_numero",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ci_expedicion",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_beneficiaria"
+		}
+	}
+}

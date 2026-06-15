@@ -1,18 +1,23 @@
 {
-	"name": "silver_inscripciones_sup",
+	"name": "gold_facts_entregas",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Prenatal/Silver"
+			"name": "Gold"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "inscripcion_id",
+				"name": "entrega_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "fecha_id",
 				"type": "int",
 				"precision": 10
 			},
@@ -31,22 +36,24 @@
 				"precision": 10
 			},
 			{
-				"name": "fecha_inscripcion",
-				"type": "date"
-			},
-			{
-				"name": "semana_gestacion",
+				"name": "paquete_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "estado",
-				"type": "varchar"
+				"name": "peso_entregado_kg",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "costo_bs",
+				"type": "float",
+				"precision": 15
 			}
 		],
 		"typeProperties": {
-			"schema": "silver_sup",
-			"table": "sup_inscripciones"
+			"schema": "gold",
+			"table": "fact_entregas_sup"
 		}
 	}
 }

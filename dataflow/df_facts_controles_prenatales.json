@@ -1,0 +1,131 @@
+{
+	"name": "df_facts_controles_prenatales",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_controles_prenatales_bja",
+						"type": "DatasetReference"
+					},
+					"name": "controlesprenatales"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_controles_sup",
+						"type": "DatasetReference"
+					},
+					"name": "controles"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_facts_controles",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          control_prenatal_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          nro_control as integer,",
+				"          fecha_control as date,",
+				"          semana_gestacion as integer,",
+				"          peso_madre_kg as double,",
+				"          presion_arterial as string,",
+				"          resultado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> controlesprenatales",
+				"source(output(",
+				"          control_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          nro_control as integer,",
+				"          fecha_control as date,",
+				"          semana_gestacion as integer,",
+				"          peso_madre_kg as double,",
+				"          presion_arterial as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> controles",
+				"controlesprenatales derive(sistema_origen = 'BJA',",
+				"          fecha_id = toInteger(toString(fecha_control, 'yyyyMMdd'))) ~> derivedColumn1",
+				"controles derive(sistema_origen = 'SUP') ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 union(byName: true)~> union1",
+				"union1 select(mapColumn(",
+				"          ci_numero,",
+				"          ci_expedicion,",
+				"          establecimiento_id,",
+				"          semana_gestacion,",
+				"          peso_madre_kg,",
+				"          presion_arterial,",
+				"          resultado,",
+				"          sistema_origen,",
+				"          fecha_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          control_dw_id as integer,",
+				"          sistema_origen as string,",
+				"          fecha_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          semana_gestacion as integer,",
+				"          peso_madre_kg as double,",
+				"          presion_arterial as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          sistema_origen,",
+				"          fecha_id,",
+				"          ci_numero,",
+				"          ci_expedicion,",
+				"          establecimiento_id,",
+				"          semana_gestacion,",
+				"          peso_madre_kg,",
+				"          presion_arterial",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

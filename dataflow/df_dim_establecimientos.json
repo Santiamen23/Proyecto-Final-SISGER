@@ -1,0 +1,105 @@
+{
+	"name": "df_dim_establecimientos",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_establecimientos_salud_bja",
+						"type": "DatasetReference"
+					},
+					"name": "establecimientosBJA"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_establecimientos_sup",
+						"type": "DatasetReference"
+					},
+					"name": "establecimientosSup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_dim_establecimientos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          establecimiento_id as integer,",
+				"          codigo_snis as string,",
+				"          nombre as string,",
+				"          tipo as string,",
+				"          nivel_atencion as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          red_salud as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> establecimientosBJA",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> establecimientosSup",
+				"union1 aggregate(groupBy(establecimiento_id),",
+				"     codigo_snis = first(codigo_snis),",
+				"          nombre = first(nombre),",
+				"          tipo = first(tipo),",
+				"          nivel_atencion = first(nivel_atencion),",
+				"          municipio = first(municipio),",
+				"          departamento = first(departamento),",
+				"          red_salud = first(red_salud),",
+				"          estado = first(estado)) ~> aggregate1",
+				"establecimientosBJA, establecimientosSup union(byName: true)~> union1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          establecimiento_id as integer,",
+				"          codigo_snis as string,",
+				"          nombre as string,",
+				"          tipo as string,",
+				"          nivel_atencion as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          red_salud as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          establecimiento_id,",
+				"          codigo_snis,",
+				"          nombre,",
+				"          tipo,",
+				"          nivel_atencion,",
+				"          municipio,",
+				"          departamento,",
+				"          red_salud",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

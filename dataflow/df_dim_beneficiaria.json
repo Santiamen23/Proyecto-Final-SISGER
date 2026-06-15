@@ -1,0 +1,112 @@
+{
+	"name": "df_dim_beneficiaria",
+	"properties": {
+		"folder": {
+			"name": "gold"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "silver_inscripciones_bja",
+						"type": "DatasetReference"
+					},
+					"name": "inscripcionesBJA"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_inscripciones_sup",
+						"type": "DatasetReference"
+					},
+					"name": "inscripcionesSUP"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "gold_dim_beneficiaria",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          inscripcion_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          fecha_inscripcion as date,",
+				"          semana_gestacion as integer,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> inscripcionesBJA",
+				"source(output(",
+				"          inscripcion_id as integer,",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          establecimiento_id as integer,",
+				"          fecha_inscripcion as date,",
+				"          semana_gestacion as integer,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> inscripcionesSUP",
+				"inscripcionesBJA select(mapColumn(",
+				"          ci_numero,",
+				"          ci_expedicion",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"inscripcionesSUP select(mapColumn(",
+				"          ci_numero,",
+				"          ci_expedicion",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1, select2 union(byName: true)~> union1",
+				"union1 aggregate(groupBy(ci_numero,",
+				"          ci_expedicion),",
+				"     conteo = count()) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ci_numero,",
+				"          ci_expedicion",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
