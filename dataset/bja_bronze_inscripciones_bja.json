@@ -1,5 +1,5 @@
 {
-	"name": "bronze_inscripciones_bja",
+	"name": "bja_bronze_inscripciones_bja",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",

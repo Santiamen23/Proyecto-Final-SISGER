@@ -1,5 +1,5 @@
 {
-	"name": "bronze_controles_pediatricos",
+	"name": "bja_bronze_controles_pediatricos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",

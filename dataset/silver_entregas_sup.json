@@ -1,0 +1,70 @@
+{
+	"name": "silver_entregas_sup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Prenatal/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "entrega_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "boleta_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ci_numero",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ci_expedicion",
+				"type": "varchar"
+			},
+			{
+				"name": "establecimiento_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paquete_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "paquete_nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_entrega",
+				"type": "date"
+			},
+			{
+				"name": "lote_produccion",
+				"type": "varchar"
+			},
+			{
+				"name": "peso_paquete_kg",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "fecha_proxima_entrega",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver_sup",
+			"table": "sup_entregas"
+		}
+	}
+}

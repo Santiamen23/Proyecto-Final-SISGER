@@ -1,5 +1,5 @@
 {
-	"name": "bronze_pagos",
+	"name": "bja_bronze_pagos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",

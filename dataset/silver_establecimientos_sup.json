@@ -1,0 +1,19 @@
+{
+	"name": "silver_establecimientos_sup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Prenatal/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "silver_sup",
+			"table": "sup_establecimientos"
+		}
+	}
+}

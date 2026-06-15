@@ -1,5 +1,5 @@
 {
-	"name": "bronze_establecimientos_salud",
+	"name": "bja_bronze_establecimientos_salud",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",

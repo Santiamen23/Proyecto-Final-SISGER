@@ -1,5 +1,5 @@
 {
-	"name": "bronze_partos",
+	"name": "bja_bronze_partos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
