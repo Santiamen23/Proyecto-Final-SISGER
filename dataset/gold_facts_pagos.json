@@ -1,5 +1,5 @@
 {
-	"name": "gold_dim_beneficiaria",
+	"name": "gold_facts_pagos",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase1",
@@ -12,6 +12,16 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "pago_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "fecha_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
 				"name": "ci_numero",
 				"type": "int",
 				"precision": 10
@@ -19,11 +29,24 @@
 			{
 				"name": "ci_expedicion",
 				"type": "varchar"
+			},
+			{
+				"name": "concepto_pago",
+				"type": "varchar"
+			},
+			{
+				"name": "monto_bs",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "estado_pago",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "gold",
-			"table": "dim_beneficiaria"
+			"table": "fact_pagos_bja"
 		}
 	}
 }
