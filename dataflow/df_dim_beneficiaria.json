@@ -20,6 +20,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "inscripcionesSUP"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_segip",
+						"type": "DatasetReference"
+					},
+					"name": "Segip"
 				}
 			],
 			"sinks": [
@@ -43,6 +50,12 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -72,6 +85,18 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> inscripcionesSUP",
+				"source(output(",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          estado_civil as string,",
+				"          nivel_estudios as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Segip",
 				"inscripcionesBJA select(mapColumn(",
 				"          ci_numero,",
 				"          ci_expedicion",
@@ -88,11 +113,30 @@
 				"union1 aggregate(groupBy(ci_numero,",
 				"          ci_expedicion),",
 				"     conteo = count()) ~> aggregate1",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"aggregate1, Segip join(aggregate1@ci_numero == Segip@ci_numero,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          ci_numero = Segip@ci_numero,",
+				"          ci_expedicion = Segip@ci_expedicion,",
+				"          nombre_completo,",
+				"          fecha_nacimiento,",
+				"          estado_civil,",
+				"          nivel_estudios",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ci_numero as integer,",
-				"          ci_expedicion as string",
+				"          ci_expedicion as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          estado_civil as string,",
+				"          nivel_estudios as string",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -104,7 +148,11 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          ci_numero,",
-				"          ci_expedicion",
+				"          ci_expedicion,",
+				"          nombre_completo,",
+				"          fecha_nacimiento,",
+				"          estado_civil,",
+				"          nivel_estudios",
 				"     )) ~> sink1"
 			]
 		}

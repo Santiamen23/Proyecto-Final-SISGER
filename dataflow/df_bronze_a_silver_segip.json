@@ -1,0 +1,87 @@
+{
+	"name": "df_bronze_a_silver_segip",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "segip",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_segip",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ci as string,",
+				"          nombres as string,",
+				"          apellido_paterno as string,",
+				"          apellido_materno as string,",
+				"          fecha_nacimiento as string,",
+				"          genero as string,",
+				"          estado_civil as string,",
+				"          ci_conyuge as string,",
+				"          numero_hijos as string,",
+				"          ci_padre as string,",
+				"          ci_madre as string,",
+				"          profesion as string,",
+				"          nivel_estudios as string,",
+				"          municipio_residencia as string,",
+				"          fecha_emision as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(ci_numero = toInteger(regexReplace(ci, '[^0-9]', '')),",
+				"          ci_expedicion = upper(trim(regexReplace(ci, '[0-9\\\\-]', ''))),",
+				"          nombre_completo = nombres + ' ' + apellido_paterno + ' ' + apellido_materno) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          ci_numero,",
+				"          ci_expedicion,",
+				"          nombre_completo,",
+				"          fecha_nacimiento,",
+				"          estado_civil,",
+				"          nivel_estudios",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ci_numero as integer,",
+				"          ci_expedicion as string,",
+				"          nombre_completo as string,",
+				"          fecha_nacimiento as date,",
+				"          estado_civil as string,",
+				"          nivel_estudios as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

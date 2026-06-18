@@ -1,12 +1,9 @@
 {
-	"name": "gold_dim_beneficiaria",
+	"name": "silver_segip",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference"
-		},
-		"folder": {
-			"name": "Gold"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -38,8 +35,8 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "gold",
-			"table": "dim_beneficiaria"
+			"schema": "segip",
+			"table": "segip_personas"
 		}
 	}
 }
